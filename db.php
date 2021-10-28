@@ -72,7 +72,8 @@ class plugins_transport_db
             }
 
             return $sql ? component_routing_db::layer()->fetchAll($sql, $params) : null;
-        } elseif ($config['context'] === 'one') {
+        }
+		elseif ($config['context'] === 'one') {
             switch ($config['type']) {
                 case 'root':
                     $sql = 'SELECT * FROM mc_transport ORDER BY id_tr DESC LIMIT 0,1';
@@ -89,6 +90,9 @@ class plugins_transport_db
                             FROM mc_cartpay_transport AS mct
                             JOIN mc_transport mt on (mct.id_tr = mt.id_tr)
                             WHERE id_buyer = :id_buyer AND id_cart = :id_cart ORDER BY id_cart_tr DESC LIMIT 0,1';
+                    break;
+                case 'transport_info':
+                    $sql = 'SELECT * FROM mc_transport WHERE id_tr = :id_tr';
                     break;
             }
 

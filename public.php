@@ -144,13 +144,14 @@ class plugins_transport_public extends plugins_transport_db
         //print_r($cart);
         if(isset($this->contentData['id_tr']) AND $this->contentData['id_tr'] != NULL) {
             // Start cart session
-            $this->cart = new Cart('mc_cart');
+            $this->cart = Cart::getInstance('mc_cart');
             $transport = array(
                 'id_cart'=>$cart['id_cart'],
                 'id_buyer'=>$cart['id_buyer'],
                 'id_tr'=>$this->contentData['id_tr']
             );
             $collection = $this->getItems('cartpay_step',$transport, 'one', false);
+			$transportData = $this->getItems('transport_info',['id_tr'=>$this->contentData['id_tr']], 'one', false);
             if($collection != NULL){
                 $this->upd(array(
                     'type' => 'cartpay',
@@ -169,15 +170,11 @@ class plugins_transport_public extends plugins_transport_db
                             'id_tr'=>$this->contentData['id_tr']
                         ))
                 );*/
-
-                $order = $this->getItems('cartpay_order',array(
-                    'id_cart'=>$cart['id_cart'],
-                    'id_buyer'=>$cart['id_buyer']
-                ), 'one', false);
-
-                $this->cart->addFee('transport',$order['price_tr']);
             }
-        }
+
+			$this->cart->addFee('transport',$transportData['price_tr'],21);
+			//$this->cart->addFee(1,$transportData['price_tr'],21);
+		}
     }
 
     /**
