@@ -97,9 +97,7 @@ class plugins_transport_admin extends plugins_transport_db
      */
     public function tableSearch($ajax = false)
     {
-        $this->modelLanguage->getLanguage();
-        $defaultLanguage = $this->collectionLanguage->fetchData(array('context' => 'one', 'type' => 'default'));
-        $results = $this->getItems('pages', array('default_lang' => $defaultLanguage['id_lang']), 'all',false,true);
+        $results = $this->getItems('pages', NULL, 'all',false,true);
         $params = array();
 
         if($ajax) {
