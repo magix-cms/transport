@@ -237,7 +237,6 @@ class plugins_transport_admin extends plugins_transport_db
                         $this->template->display('edit.tpl');
                     }
                     break;
-                case 'import':
             }
         }else{
             $this->getItems('pages',NULL,'all',true,true);
