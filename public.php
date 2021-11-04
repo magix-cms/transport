@@ -53,6 +53,9 @@ class plugins_transport_public extends plugins_transport_db
             $data['name'] = $row['name_tr'];
             $data['postcode'] = $row['postcode_tr'];
             $data['price'] = $row['price_tr'];
+            $data['lastname'] = $row['lastname_ct'];
+            $data['firstname'] = $row['firstname_ct'];
+            $data['street'] = $row['street_ct'];
         }
         return $data;
     }
@@ -143,6 +146,15 @@ class plugins_transport_public extends plugins_transport_db
     public function processOrderStep($cart) {
         //print_r($cart);
         if(isset($this->contentData['id_tr']) AND $this->contentData['id_tr'] != NULL) {
+
+            $newdata = array();
+            $newdata['id_cart'] = $cart['id_cart'];
+            $newdata['id_buyer'] = $cart['id_buyer'];
+            $newdata['id_tr'] = $this->contentData['id_tr'];
+            $newdata['firstname_ct'] = (!empty($this->contentData['firstname_ct'])) ? $this->contentData['firstname_ct'] : NULL;
+            $newdata['lastname_ct'] = (!empty($this->contentData['lastname_ct'])) ? $this->contentData['lastname_ct'] : NULL;
+            $newdata['street_ct'] = (!empty($this->contentData['street_ct'])) ? $this->contentData['street_ct'] : NULL;
+
             // Start cart session
             $this->cart = Cart::getInstance('mc_cart');
             $transport = array(
@@ -155,12 +167,12 @@ class plugins_transport_public extends plugins_transport_db
             if($collection != NULL){
                 $this->upd(array(
                     'type' => 'cartpay',
-                    'data' => $transport
+                    'data' => $newdata
                 ));
             }else{
                 $this->add(array(
                     'type' => 'cartpay',
-                    'data' => $transport
+                    'data' => $newdata
                 ));
                 /*$log = new debug_logger(MP_LOG_DIR);
                 $log->tracelog(json_encode(
