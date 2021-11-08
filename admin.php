@@ -193,7 +193,27 @@ class plugins_transport_admin extends plugins_transport_db
                 break;
         }
     }
-
+    private function setItemData($row)
+    {
+        $data = array();
+        if ($row != null) {
+            $data['lastname'] = $row['lastname_ct'];
+            $data['firstname'] = $row['firstname_ct'];
+            $data['street'] = $row['street_ct'];
+            $data['postcode'] = $row['postcode_tr'];
+            $data['name'] = $row['name_tr'];
+            $data['price'] = $row['price_tr'];
+        }
+        return $data;
+    }
+    /**
+     * @param $idcart
+     * @return mixed
+     */
+    public function getTransport($idcart){
+        $data = $this->getItems('cartOrder', array('id'=>$idcart), 'one',false,false);
+        return $this->setItemData($data);
+    }
     /**
      * @throws Exception
      */

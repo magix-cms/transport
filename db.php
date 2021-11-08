@@ -94,6 +94,12 @@ class plugins_transport_db
                 case 'transport_info':
                     $sql = 'SELECT * FROM mc_transport WHERE id_tr = :id_tr';
                     break;
+                case 'cartOrder':
+                    $sql = 'SELECT mt.*, mct.street_ct, mct.firstname_ct, mct.lastname_ct
+                            FROM mc_cartpay_transport AS mct
+                            JOIN mc_transport mt on (mct.id_tr = mt.id_tr)
+                            WHERE mct.id_cart = :id';
+                    break;
             }
 
             return $sql ? component_routing_db::layer()->fetch($sql, $params) : null;
