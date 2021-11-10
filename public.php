@@ -12,7 +12,7 @@ class plugins_transport_public extends plugins_transport_db
     /**
      * @var int $id
      */
-    protected $id, $cart;
+    protected $id, $cart, $settingComp, $settings;
     public $contentData;
 
     /**
@@ -24,6 +24,8 @@ class plugins_transport_public extends plugins_transport_db
         $this->template = $t instanceof frontend_model_template ? $t : new frontend_model_template();
         $formClean = new form_inputEscape();
         $this->data = new frontend_model_data($this, $this->template);
+        $this->settingComp = new component_collections_setting();
+        $this->settings = $this->settingComp->getSetting();
 
         if (http_request::isGet('id')) $this->id = $formClean->numeric($_GET['id']);
         if (http_request::isPost('contentData')) $this->contentData = $formClean->arrayClean($_POST['contentData']);
@@ -184,7 +186,7 @@ class plugins_transport_public extends plugins_transport_db
                 );*/
             }
 
-			$this->cart->addFee('transport',$transportData['price_tr'],21);
+			$this->cart->addFee('transport',$transportData['price_tr'], $this->settings['vat_rate']['value']);
 			//$this->cart->addFee(1,$transportData['price_tr'],21);
 		}
     }
