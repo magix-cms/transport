@@ -83,19 +83,19 @@ class plugins_transport_db
                     break;
                 case 'cartpay_step':
                     $sql = 'SELECT * FROM mc_cartpay_transport 
-                            WHERE id_tr = :id_tr AND id_buyer = :id_buyer AND id_cart = :id_cart';
+                            WHERE id_buyer = :id_buyer AND id_cart = :id_cart';
                     break;
                 case 'cartpay_order':
-                    $sql = 'SELECT mt.*, mct.street_ct, mct.firstname_ct, mct.lastname_ct
+                    $sql = 'SELECT mt.*, mct.*
                             FROM mc_cartpay_transport AS mct
-                            JOIN mc_transport mt on (mct.id_tr = mt.id_tr)
+                            LEFT JOIN mc_transport mt on (mct.id_tr = mt.id_tr)
                             WHERE id_buyer = :id_buyer AND id_cart = :id_cart ORDER BY id_cart_tr DESC LIMIT 0,1';
                     break;
                 case 'transport_info':
                     $sql = 'SELECT * FROM mc_transport WHERE id_tr = :id_tr';
                     break;
                 case 'cartOrder':
-                    $sql = 'SELECT mt.*, mct.street_ct, mct.firstname_ct, mct.lastname_ct
+                    $sql = 'SELECT mt.*, mct.*
                             FROM mc_cartpay_transport AS mct
                             JOIN mc_transport mt on (mct.id_tr = mt.id_tr)
                             WHERE mct.id_cart = :id';
@@ -122,8 +122,8 @@ class plugins_transport_db
                         VALUE (:price_tr, :name_tr, :postcode_tr, NOW())";
                 break;
             case 'cartpay':
-                $sql = "INSERT INTO mc_cartpay_transport (id_tr, id_cart, id_buyer, lastname_ct, firstname_ct, street_ct, date_register)
-                        VALUE (:id_tr, :id_cart, :id_buyer, :lastname_ct, :firstname_ct, :street_ct, NOW())";
+                $sql = "INSERT INTO mc_cartpay_transport (id_tr, id_cart, id_buyer, type_ct, lastname_ct, firstname_ct, street_ct, event_ct, delivery_date_ct, timeslot_ct, date_register)
+                        VALUE (:id_tr, :id_cart, :id_buyer, :type_ct, :lastname_ct, :firstname_ct, :street_ct, :event_ct, :delivery_date_ct, :timeslot_ct, NOW())";
                 break;
         }
 
@@ -162,9 +162,13 @@ class plugins_transport_db
                 $sql = 'UPDATE mc_cartpay_transport 
 						SET 
 							id_tr = :id_tr,
+						    type_ct = : type_ct,
 						    lastname_ct = :lastname_ct,
 						    firstname_ct = :firstname_ct,
-						    street_ct = :street_ct
+						    street_ct = :street_ct,
+						    event_ct = :event_ct, 
+						    delivery_date_ct = :delivery_date_ct, 
+						    timeslot_ct = :timeslot_ct
 
                 		WHERE id_buyer = :id_buyer AND id_cart = :id_cart';
                 break;

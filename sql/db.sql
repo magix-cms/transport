@@ -9,12 +9,16 @@ CREATE TABLE IF NOT EXISTS `mc_transport` (
 
 CREATE TABLE IF NOT EXISTS `mc_cartpay_transport` (
     `id_cart_tr` int(7) UNSIGNED NOT NULL AUTO_INCREMENT,
-    `id_tr` int(7) UNSIGNED NOT NULL,
+    `id_tr` int(7) UNSIGNED DEFAULT NULL,
     `id_cart` int(7) UNSIGNED NOT NULL,
     `id_buyer` int(11) UNSIGNED NOT NULL,
+    `type_ct` enum('delivery','pick_up_in_store') NOT NULL DEFAULT 'delivery',
     `lastname_ct` varchar(50) DEFAULT NULL,
     `firstname_ct` varchar(50) DEFAULT NULL,
     `street_ct` varchar(50) DEFAULT NULL,
+    `event_ct` varchar(40) DEFAULT NULL,
+    `delivery_date_ct` date DEFAULT NULL,
+    `timeslot_ct` varchar(30) DEFAULT NULL,
     `date_register` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id_cart_tr`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;

@@ -58,6 +58,7 @@ class plugins_transport_public extends plugins_transport_db
             $data['lastname'] = $row['lastname_ct'];
             $data['firstname'] = $row['firstname_ct'];
             $data['street'] = $row['street_ct'];
+            $data['type'] = $row['type_ct'];
         }
         return $data;
     }
@@ -147,37 +148,42 @@ class plugins_transport_public extends plugins_transport_db
      */
     public function processOrderStep($cart) {
         //print_r($cart);
-        if(isset($this->contentData['id_tr']) AND $this->contentData['id_tr'] != NULL) {
-
+        if(isset($this->contentData['type_ct'])) {
+            $dateFormat = new date_dateformat();
             $newdata = array();
             $newdata['id_cart'] = $cart['id_cart'];
             $newdata['id_buyer'] = $cart['id_buyer'];
-            $newdata['id_tr'] = $this->contentData['id_tr'];
+            // if delivery
+            $newdata['type_ct'] = $this->contentData['type_ct'];
+            $newdata['id_tr'] = (!empty($this->contentData['id_tr'])) ? $this->contentData['id_tr'] : NULL;
             $newdata['firstname_ct'] = (!empty($this->contentData['firstname_ct'])) ? $this->contentData['firstname_ct'] : NULL;
             $newdata['lastname_ct'] = (!empty($this->contentData['lastname_ct'])) ? $this->contentData['lastname_ct'] : NULL;
             $newdata['street_ct'] = (!empty($this->contentData['street_ct'])) ? $this->contentData['street_ct'] : NULL;
+            $newdata['event_ct'] = (!empty($this->contentData['event_ct'])) ? $this->contentData['event_ct'] : NULL;
+            $newdata['timeslot_ct'] = (!empty($this->contentData['timeslot_ct'])) ? $this->contentData['timeslot_ct'] : NULL;
+            $newdata['delivery_date_ct'] = (!empty($this->contentData['delivery_date_ct'])) ? $dateFormat->SQLDate($this->contentData['delivery_date_ct']) : NULL;
 
-            // Start cart session
+            //Start cart session
             $this->cart = Cart::getInstance('mc_cart');
             $transport = array(
-                'id_cart'=>$cart['id_cart'],
-                'id_buyer'=>$cart['id_buyer'],
-                'id_tr'=>$this->contentData['id_tr']
+                'id_cart' => $cart['id_cart'],
+                'id_buyer' => $cart['id_buyer']
             );
-            $collection = $this->getItems('cartpay_step',$transport, 'one', false);
-			$transportData = $this->getItems('transport_info',['id_tr'=>$this->contentData['id_tr']], 'one', false);
-            if($collection != NULL){
+            $collection = $this->getItems('cartpay_step', $transport, 'one', false);
+
+            if ($collection != NULL) {
                 $this->upd(array(
                     'type' => 'cartpay',
                     'data' => $newdata
                 ));
-            }else{
+            } else {
                 $this->add(array(
                     'type' => 'cartpay',
                     'data' => $newdata
                 ));
                 /*$log = new debug_logger(MP_LOG_DIR);
-                $log->tracelog(json_encode(
+                $log->tracelog(json_encode($newdata));*/
+                /*$log->tracelog(json_encode(
                         array(
                             'id_cart'=>$cart['id_cart'],
                             'id_buyer'=>$cart['id_buyer'],
@@ -186,9 +192,16 @@ class plugins_transport_public extends plugins_transport_db
                 );*/
             }
 
-			$this->cart->addFee('transport',$transportData['price_tr'], $this->settings['vat_rate']['value']);
-			//$this->cart->addFee(1,$transportData['price_tr'],21);
-		}
+            if ($this->contentData['type_ct'] === 'delivery') {
+                if (isset($this->contentData['id_tr']) and $this->contentData['id_tr'] != NULL) {
+
+                    $transportData = $this->getItems('transport_info', ['id_tr' => $this->contentData['id_tr']], 'one', false);
+
+                    $this->cart->addFee('transport', $transportData['price_tr'], $this->settings['vat_rate']['value']);
+                    //$this->cart->addFee(1,$transportData['price_tr'],21);
+                }
+            }
+        }
     }
 
     /**
@@ -205,6 +218,7 @@ class plugins_transport_public extends plugins_transport_db
             'id_cart'=>$cart['id_cart'],
             'id_buyer'=>$cart['id_buyer']
         );
+
         $collection = $this->getItems('cartpay_order',$transport, 'one', false);
         $this->template->assign('transport',$this->setItemData($collection));
         $arb = [
