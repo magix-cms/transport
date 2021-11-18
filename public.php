@@ -227,5 +227,29 @@ class plugins_transport_public extends plugins_transport_db
         ];
         return $arb;
     }
+
+    /**
+     * @param $cart
+     * @return array
+     */
+    public function mailResumeInfos($cart){
+        $this->template->addConfigFile(
+            [component_core_system::basePath().'/plugins/transport/i18n/'],
+            ['public_local_'],
+            false
+        );
+        $transport = array(
+            'id_cart'=>$cart['id_cart'],
+            'id_buyer'=>$cart['id_buyer']
+        );
+
+        $collection = $this->getItems('cartpay_order',$transport, 'one', false);
+        $this->template->assign('transport',$this->setItemData($collection));
+        $arb = [
+            'name'=>$this->template->getConfigVars('transport_step'),
+            'desc'=> $this->template->fetch('transport/resume-mail.tpl')
+        ];
+        return $arb;
+    }
     // ---- End Cartpay
 }
