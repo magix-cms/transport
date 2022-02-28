@@ -79,9 +79,9 @@
                 <div class="row">
                     <div class="col-12 col-sm-4">
                         <div class="form-group">
-                            <label for="contentData[event_ct]">{#ph_event#|ucfirst}</label>
+                            <label for="contentData[event_ct]">{#ph_event#|ucfirst} *</label>
                             <select name="contentData[event_ct]" id="contentData[event_ct]" class="form-control to-required" {*required*}>
-                                <option selected>-- {#pn_event#|ucfirst} --</option>
+                                <option disabled selected>-- {#pn_event#|ucfirst} --</option>
                                 {foreach $eventCollection as $key}
                                     <option value="{$key}">{#$key#}</option>
                                 {/foreach}
@@ -90,9 +90,9 @@
                     </div>
                     <div class="col-12 col-sm-4">
                         <div class="form-group">
-                            <label for="contentData[timeslot_ct]">{#ph_timeslot#|ucfirst}</label>
-                            <select name="contentData[timeslot_ct]" id="contentData[timeslot_ct]" class="form-control">
-                                <option value="">{#pn_timeslot#|ucfirst}</option>
+                            <label for="contentData[timeslot_ct]">{#ph_timeslot#|ucfirst} *</label>
+                            <select name="contentData[timeslot_ct]" id="contentData[timeslot_ct]" class="form-control to-required">
+                                <option disabled selected value="">{#pn_timeslot#|ucfirst}</option>
                                 <option value="the_morning">{#the_morning#}</option>
                                 <option value="afternoon">{#afternoon#}</option>
                             </select>
@@ -101,7 +101,7 @@
                     <div class="col-12 col-sm-4">
                         <div class="form-group">
                             <label for="contentData[delivery_date_ct]">{#pn_delivery_date#|ucfirst}&nbsp;:</label>
-                            <input id="contentData[delivery_date_ct]" min="{($smarty.now + 86400)|date_format:'%Y-%m-%d'}" type="date" name="contentData[delivery_date_ct]" placeholder="{#ph_delivery_date#|ucfirst}" class="form-control date" pattern="{literal}[0-9]{2}/[0-9]{2}/[0-9]{4}{/literal}" />
+                            <input id="contentData[delivery_date_ct]" min="{($smarty.now + 86400)|date_format:'%Y-%m-%d'}" type="date" name="contentData[delivery_date_ct]" placeholder="{#ph_delivery_date#|ucfirst}" class="form-control date to-required" pattern="{literal}[0-9]{2}/[0-9]{2}/[0-9]{4}{/literal}" />
                         </div>
                     </div>
                 </div>

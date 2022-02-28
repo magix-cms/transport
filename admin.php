@@ -203,6 +203,7 @@ class plugins_transport_admin extends plugins_transport_db
             $data['postcode'] = $row['postcode_tr'];
             $data['name'] = $row['name_tr'];
             $data['price'] = $row['price_tr'];
+            $data['type'] = $row['type_ct'];
         }
         return $data;
     }

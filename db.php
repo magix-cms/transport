@@ -97,7 +97,7 @@ class plugins_transport_db
                 case 'cartOrder':
                     $sql = 'SELECT mt.*, mct.*
                             FROM mc_cartpay_transport AS mct
-                            JOIN mc_transport mt on (mct.id_tr = mt.id_tr)
+                            LEFT JOIN mc_transport mt on (mct.id_tr = mt.id_tr)
                             WHERE mct.id_cart = :id';
                     break;
             }

@@ -59,6 +59,10 @@ class plugins_transport_public extends plugins_transport_db
             $data['firstname'] = $row['firstname_ct'];
             $data['street'] = $row['street_ct'];
             $data['type'] = $row['type_ct'];
+            $data['delivery_date'] = $row['delivery_date_ct'];
+            $data['event'] = $row['event_ct'];
+            $data['timeslot'] = $row['timeslot_ct'];
+
         }
         return $data;
     }
@@ -197,7 +201,7 @@ class plugins_transport_public extends plugins_transport_db
 
                     $transportData = $this->getItems('transport_info', ['id_tr' => $this->contentData['id_tr']], 'one', false);
 
-                    $this->cart->addFee('transport', $transportData['price_tr'], $this->settings['vat_rate']['value']);
+                    $this->cart->addFee('transport', $transportData['price_tr'], 21/*$this->settings['vat_rate']['value']*/);
                     //$this->cart->addFee(1,$transportData['price_tr'],21);
                 }
             }
