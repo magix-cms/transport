@@ -49,11 +49,14 @@ class plugins_transport_public extends plugins_transport_db
      */
     private function setItemData($row)
     {
+        $country_tr = $this->template->getConfigVars($row['country_tr']);
         $data = array();
         if ($row != null) {
             $data['id'] = $row['id_tr'];
             $data['name'] = $row['name_tr'];
-            $data['postcode'] = $row['postcode_tr'];
+            $data['postcode'] = $row['postcode_ct'];
+            $data['city'] = $row['city_ct'];
+            $data['country'] = $country_tr;
             $data['price'] = $row['price_tr'];
             $data['lastname'] = $row['lastname_ct'];
             $data['firstname'] = $row['firstname_ct'];
@@ -163,9 +166,11 @@ class plugins_transport_public extends plugins_transport_db
             $newdata['firstname_ct'] = (!empty($this->contentData['firstname_ct'])) ? $this->contentData['firstname_ct'] : NULL;
             $newdata['lastname_ct'] = (!empty($this->contentData['lastname_ct'])) ? $this->contentData['lastname_ct'] : NULL;
             $newdata['street_ct'] = (!empty($this->contentData['street_ct'])) ? $this->contentData['street_ct'] : NULL;
-            $newdata['event_ct'] = (!empty($this->contentData['event_ct'])) ? $this->contentData['event_ct'] : NULL;
-            $newdata['timeslot_ct'] = (!empty($this->contentData['timeslot_ct'])) ? $this->contentData['timeslot_ct'] : NULL;
-            $newdata['delivery_date_ct'] = (!empty($this->contentData['delivery_date_ct'])) ? $dateFormat->SQLDate($this->contentData['delivery_date_ct']) : NULL;
+            $newdata['event_ct'] = (!empty($this->contentData['event_ct']) OR !isset($this->contentData['event_ct'])) ? $this->contentData['event_ct'] : NULL;
+            $newdata['timeslot_ct'] = (!empty($this->contentData['timeslot_ct']) OR !isset($this->contentData['timeslot_ct'])) ? $this->contentData['timeslot_ct'] : NULL;
+            $newdata['delivery_date_ct'] = (!empty($this->contentData['delivery_date_ct']) OR !isset($this->contentData['delivery_date_ct'])) ? $dateFormat->SQLDate($this->contentData['delivery_date_ct']) : NULL;
+            $newdata['city_ct'] = (!empty($this->contentData['city_ct'])) ? $this->contentData['city_ct'] : NULL;
+            $newdata['postcode_ct'] = (!empty($this->contentData['postcode_ct'])) ? $this->contentData['postcode_ct'] : NULL;
 
             //Start cart session
             $this->cart = Cart::getInstance('mc_cart');
@@ -201,7 +206,7 @@ class plugins_transport_public extends plugins_transport_db
 
                     $transportData = $this->getItems('transport_info', ['id_tr' => $this->contentData['id_tr']], 'one', false);
 
-                    $this->cart->addFee('transport', $transportData['price_tr'], 21/*$this->settings['vat_rate']['value']*/);
+                    $this->cart->addFee('transport', $transportData['price_tr'], $this->settings['vat_rate']);
                     //$this->cart->addFee(1,$transportData['price_tr'],21);
                 }
             }

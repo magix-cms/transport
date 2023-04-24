@@ -5,15 +5,16 @@ class plugins_transport_admin extends plugins_transport_db
     protected $message, $template, $header, $data, $modelLanguage, $collectionLanguage, $order, $upload, $config, $modelPlugins, $routingUrl, $makeFiles, $finder, $plugins, $progress;
     public $id_tr, $content, $pages, $iso, $ajax, $tableaction, $tableform, $offset, $transData, $importData;
 
-    public $tableconfig = array(
-        'all' => array(
+    public $tableconfig = [
+        'all' => [
             'id_tr',
-            'name_tr' => array('title' => 'name'),
-            'postcode_tr' => array('title' => 'name'),
-            'price_tr' => array('type' => 'price','input' => null),
+            'name_tr' => ['title' => 'name'],
+            'postcode_tr' => ['title' => 'name'],
+            'country_tr' => ['title' => 'name','type' => 'enum', 'enum' => '', 'input' => null, 'class' => ''],
+            'price_tr' => ['type' => 'price','input' => null],
             'date_register'
-        )
-    );
+        ]
+    ];
     /**
      * frontend_controller_home constructor.
      */
@@ -200,7 +201,9 @@ class plugins_transport_admin extends plugins_transport_db
             $data['lastname'] = $row['lastname_ct'];
             $data['firstname'] = $row['firstname_ct'];
             $data['street'] = $row['street_ct'];
-            $data['postcode'] = $row['postcode_tr'];
+            $data['postcode'] = $row['postcode_ct'];
+            $data['city'] = $row['city_ct'];
+            $data['country'] = $row['country_tr'];
             $data['name'] = $row['name_tr'];
             $data['price'] = $row['price_tr'];
             $data['type'] = $row['type_ct'];
@@ -214,6 +217,60 @@ class plugins_transport_admin extends plugins_transport_db
     public function getTransport($idcart){
         $data = $this->getItems('cartOrder', array('id'=>$idcart), 'one',false,false);
         return $this->setItemData($data);
+    }
+
+    /**
+     * @return string
+     */
+    public function extendCartpayForm() : string{
+        $pluginsDir = component_core_system::basePath().'plugins'.DIRECTORY_SEPARATOR.'transport'.DIRECTORY_SEPARATOR.'skin'.DIRECTORY_SEPARATOR.'admin'.DIRECTORY_SEPARATOR;
+        $dir = $pluginsDir.'form/transport.tpl';
+        return $dir;
+    }
+
+    /**
+     * @return array
+     */
+    public function extendCartpayQuery() : array{
+        return [
+            'select' => [
+                'mct.type_ct',
+                'mct.lastname_ct',
+                'mct.firstname_ct',
+                'mct.street_ct',
+                'mct.city_ct',
+                'mct.postcode_ct',
+                'mct.event_ct',
+                'mct.delivery_date_ct',
+                'mct.timeslot_ct',
+                'mt.country_tr',
+                'mt.price_tr'
+            ],
+            'join' => [
+                ['type' => 'LEFT JOIN',
+                    'table' => 'mc_cartpay_transport',
+                    'as' => 'mct',
+                    'on' => [
+                        'table' => 'cart',
+                        'key' => 'id_cart'
+                    ]
+                ],
+                ['type' => 'LEFT JOIN',
+                    'table' => 'mc_transport',
+                    'as' => 'mt',
+                    'on' => [
+                        'table' => 'mct',
+                        'key' => 'id_tr'
+                    ]
+                ]
+            ]/*,
+            'where' => [
+                [
+                    'type' => 'AND',
+                    'condition' => 'mavc.id_lang = mcpc.id_lang'
+                ]
+            ]*/
+        ];
     }
     /**
      * @throws Exception
@@ -230,6 +287,8 @@ class plugins_transport_admin extends plugins_transport_db
                         $newdata['name_tr'] = (!empty($this->transData['name_tr'])) ? $this->transData['name_tr'] : NULL;
                         $newdata['postcode_tr'] = (!empty($this->transData['postcode_tr'])) ? $this->transData['postcode_tr'] : NULL;
                         $newdata['price_tr'] = (!empty($this->transData['price_tr'])) ? number_format(str_replace(",", ".", $this->transData['price_tr']), 2, '.', '') : NULL;
+                        $newdata['country_tr'] = (!empty($this->transData['country_tr'])) ? $this->transData['country_tr'] : NULL;
+
                         // Add data
                         $this->add(array(
                             'type' => 'page',
@@ -237,6 +296,9 @@ class plugins_transport_admin extends plugins_transport_db
                         ));
                         $this->message->json_post_response(true, 'add_redirect');
                     }else{
+                        $country = new component_collections_country();
+                        $this->template->assign('countries',$country->getAllowedCountries());
+
                         $this->template->display('add.tpl');
                     }
                     break;
@@ -247,6 +309,8 @@ class plugins_transport_admin extends plugins_transport_db
                         $newdata['name_tr'] = (!empty($this->transData['name_tr'])) ? $this->transData['name_tr'] : NULL;
                         $newdata['postcode_tr'] = (!empty($this->transData['postcode_tr'])) ? $this->transData['postcode_tr'] : NULL;
                         $newdata['price_tr'] = (!empty($this->transData['price_tr'])) ? number_format(str_replace(",", ".", $this->transData['price_tr']), 2, '.', '') : NULL;
+                        $newdata['country_tr'] = (!empty($this->transData['country_tr'])) ? $this->transData['country_tr'] : NULL;
+
                         // Add data
                         $this->upd(array(
                             'type' => 'page',
@@ -254,6 +318,8 @@ class plugins_transport_admin extends plugins_transport_db
                         ));
                         $this->message->json_post_response(true, 'update', $this->transData);
                     }else{
+                        $country = new component_collections_country();
+                        $this->template->assign('countries',$country->getAllowedCountries());
                         $this->getItems('page',array('id_tr'=>$this->edit),'one',true,true);
                         $this->template->display('edit.tpl');
                     }

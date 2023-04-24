@@ -3,9 +3,10 @@ CREATE TABLE IF NOT EXISTS `mc_transport` (
     `price_tr` decimal(12,2) NULL DEFAULT '0.00',
     `name_tr` varchar(50) DEFAULT NULL,
     `postcode_tr` varchar(10) DEFAULT NULL,
+    `country_tr` varchar(10) DEFAULT NULL,
     `date_register` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id_tr`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 CREATE TABLE IF NOT EXISTS `mc_cartpay_transport` (
     `id_cart_tr` int(7) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -16,12 +17,11 @@ CREATE TABLE IF NOT EXISTS `mc_cartpay_transport` (
     `lastname_ct` varchar(50) DEFAULT NULL,
     `firstname_ct` varchar(50) DEFAULT NULL,
     `street_ct` varchar(50) DEFAULT NULL,
+    `city_ct` varchar(40) DEFAULT NULL,
+    `postcode_ct` varchar(10) DEFAULT NULL,
     `event_ct` varchar(40) DEFAULT NULL,
-    `delivery_date_ct` date DEFAULT NULL,
+    `delivery_date_ct` date DEFAULT '0000-00-00',
     `timeslot_ct` varchar(30) DEFAULT NULL,
     `date_register` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id_cart_tr`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
-INSERT INTO `mc_admin_access` (`id_role`, `id_module`, `view`, `append`, `edit`, `del`, `action`)
-SELECT 1, m.id_module, 1, 1, 1, 1, 1 FROM mc_module as m WHERE name = 'transport';

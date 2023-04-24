@@ -118,12 +118,12 @@ class plugins_transport_db
 
         switch ($config['type']) {
             case 'page':
-                $sql = "INSERT INTO mc_transport (price_tr,name_tr,postcode_tr, date_register)
-                        VALUE (:price_tr, :name_tr, :postcode_tr, NOW())";
+                $sql = "INSERT INTO mc_transport (price_tr,name_tr,postcode_tr, country_tr, date_register)
+                        VALUE (:price_tr, :name_tr, :postcode_tr, :country_tr, NOW())";
                 break;
             case 'cartpay':
-                $sql = "INSERT INTO mc_cartpay_transport (id_tr, id_cart, id_buyer, type_ct, lastname_ct, firstname_ct, street_ct, event_ct, delivery_date_ct, timeslot_ct, date_register)
-                        VALUE (:id_tr, :id_cart, :id_buyer, :type_ct, :lastname_ct, :firstname_ct, :street_ct, :event_ct, :delivery_date_ct, :timeslot_ct, NOW())";
+                $sql = "INSERT INTO mc_cartpay_transport (id_tr, id_cart, id_buyer, type_ct, lastname_ct, firstname_ct, street_ct, city_ct, postcode_ct, event_ct, delivery_date_ct, timeslot_ct, date_register)
+                        VALUE (:id_tr, :id_cart, :id_buyer, :type_ct, :lastname_ct, :firstname_ct, :street_ct, :city_ct, :postcode_ct, :event_ct, :delivery_date_ct, :timeslot_ct, NOW())";
                 break;
         }
 
@@ -154,6 +154,7 @@ class plugins_transport_db
 						SET 
 							name_tr = :name_tr,
 						    postcode_tr = :postcode_tr,
+						    country_tr = :country_tr,
 						    price_tr = :price_tr
 
                 		WHERE id_tr = :id_tr';
@@ -166,6 +167,8 @@ class plugins_transport_db
 						    lastname_ct = :lastname_ct,
 						    firstname_ct = :firstname_ct,
 						    street_ct = :street_ct,
+						    city_ct = :city_ct,
+						    postcode_ct = :postcode_ct,
 						    event_ct = :event_ct, 
 						    delivery_date_ct = :delivery_date_ct, 
 						    timeslot_ct = :timeslot_ct
