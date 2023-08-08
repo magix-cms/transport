@@ -1,31 +1,31 @@
 <?php
-class plugins_transport_db
-{
+class plugins_transport_db {
+	/**
+	 * @var debug_logger $logger
+	 */
+	protected debug_logger $logger;
+	
     /**
-     * @param $config
-     * @param bool $params
-     * @return mixed|null
-     * @throws Exception
-     */
-    public function fetchData($config, $params = false)
-    {
-        if (!is_array($config)) return '$config must be an array';
-
-        $sql = '';
+	 * @param array $config
+	 * @param array $params
+	 * @return array|bool
+	 */
+	public function fetchData(array $config,array $params = []) {
+        $query = '';
         $dateFormat = new component_format_date();
 
         if ($config['context'] === 'all') {
             switch ($config['type']) {
                 case 'pages':
                     $limit = '';
-                    if ($config['offset']) {
+                    if (!empty($config['offset'])) {
                         $limit = ' LIMIT 0, ' . $config['offset'];
                         if (isset($config['page']) && $config['page'] > 1) {
                             $limit = ' LIMIT ' . (($config['page'] - 1) * $config['offset']) . ', ' . $config['offset'];
                         }
                     }
 
-                    $sql = "SELECT p.*
+                    $query = "SELECT p.*
 						FROM mc_transport AS p " . $limit;
 
                     if (isset($config['search'])) {
@@ -53,104 +53,113 @@ class plugins_transport_db
                                 }
                             }
 
-                            $sql = "SELECT p.*
-						FROM mc_transport AS p $cond" . $limit;
+                            $query = "SELECT p.* FROM mc_transport AS p $cond" . $limit;
                         }
                     }
                     break;
                 case 'page':
-                    $sql = 'SELECT p.*
+                    $query = 'SELECT p.*
 							FROM mc_transport AS p
 							WHERE p.id_tr = :edit';
                     break;
                 case 'lastPages':
-                    $sql = "SELECT p.*
+                    $query = "SELECT p.*
 							FROM mc_transport AS p
 							ORDER BY p.id_tr DESC
 							LIMIT 1";
                     break;
+				default:
+					return false;
             }
 
-            return $sql ? component_routing_db::layer()->fetchAll($sql, $params) : null;
+			try {
+				return component_routing_db::layer()->fetchAll($query, $params);
+			}
+			catch (Exception $e) {
+				if(!isset($this->logger)) $this->logger = new debug_logger(MP_LOG_DIR);
+				$this->logger->log('statement','db',$e->getMessage(),$this->logger::LOG_MONTH);
+			}
         }
 		elseif ($config['context'] === 'one') {
             switch ($config['type']) {
                 case 'root':
-                    $sql = 'SELECT * FROM mc_transport ORDER BY id_tr DESC LIMIT 0,1';
+                    $query = 'SELECT * FROM mc_transport ORDER BY id_tr DESC LIMIT 0,1';
                     break;
                 case 'page':
-                    $sql = 'SELECT * FROM mc_transport WHERE `id_tr` = :id_tr';
+                    $query = 'SELECT * FROM mc_transport WHERE `id_tr` = :id_tr';
                     break;
                 case 'cartpay_step':
-                    $sql = 'SELECT * FROM mc_cartpay_transport 
+                    $query = 'SELECT * FROM mc_cartpay_transport 
                             WHERE id_buyer = :id_buyer AND id_cart = :id_cart';
                     break;
                 case 'cartpay_order':
-                    $sql = 'SELECT mt.*, mct.*
+                    $query = 'SELECT mt.*, mct.*
                             FROM mc_cartpay_transport AS mct
                             LEFT JOIN mc_transport mt on (mct.id_tr = mt.id_tr)
                             WHERE id_buyer = :id_buyer AND id_cart = :id_cart ORDER BY id_cart_tr DESC LIMIT 0,1';
                     break;
                 case 'transport_info':
-                    $sql = 'SELECT * FROM mc_transport WHERE id_tr = :id_tr';
+                    $query = 'SELECT * FROM mc_transport WHERE id_tr = :id_tr';
                     break;
                 case 'cartOrder':
-                    $sql = 'SELECT mt.*, mct.*
+                    $query = 'SELECT mt.*, mct.*
                             FROM mc_cartpay_transport AS mct
                             LEFT JOIN mc_transport mt on (mct.id_tr = mt.id_tr)
                             WHERE mct.id_cart = :id';
                     break;
+				default:
+					return false;
             }
 
-            return $sql ? component_routing_db::layer()->fetch($sql, $params) : null;
+			try {
+				return component_routing_db::layer()->fetch($query, $params);
+			}
+			catch (Exception $e) {
+				if(!isset($this->logger)) $this->logger = new debug_logger(MP_LOG_DIR);
+				$this->logger->log('statement','db',$e->getMessage(),$this->logger::LOG_MONTH);
+			}
         }
+		return false;
     }
-    /**
-     * @param $config
-     * @param array $params
-     * @return bool|string
-     */
-    public function insert($config,$params = array())
-    {
-        if (!is_array($config)) return '$config must be an array';
 
-        $sql = '';
-
+	/**
+	 * @param array $config
+	 * @param array $params
+	 * @return bool|string
+	 */
+	public function insert(array $config, array $params = []) {
         switch ($config['type']) {
             case 'page':
-                $sql = "INSERT INTO mc_transport (price_tr,name_tr,postcode_tr, country_tr, date_register)
+                $query = "INSERT INTO mc_transport (price_tr,name_tr,postcode_tr, country_tr, date_register)
                         VALUE (:price_tr, :name_tr, :postcode_tr, :country_tr, NOW())";
                 break;
             case 'cartpay':
-                $sql = "INSERT INTO mc_cartpay_transport (id_tr, id_cart, id_buyer, type_ct, lastname_ct, firstname_ct, street_ct, city_ct, postcode_ct, event_ct, delivery_date_ct, timeslot_ct, date_register)
+                $query = "INSERT INTO mc_cartpay_transport (id_tr, id_cart, id_buyer, type_ct, lastname_ct, firstname_ct, street_ct, city_ct, postcode_ct, event_ct, delivery_date_ct, timeslot_ct, date_register)
                         VALUE (:id_tr, :id_cart, :id_buyer, :type_ct, :lastname_ct, :firstname_ct, :street_ct, :city_ct, :postcode_ct, :event_ct, :delivery_date_ct, :timeslot_ct, NOW())";
                 break;
+			default:
+				return false;
         }
 
-        if($sql === '') return 'Unknown request asked';
-
-        try {
-            component_routing_db::layer()->insert($sql,$params);
-            return true;
-        }
-        catch (Exception $e) {
-            return 'Exception reçue : '.$e->getMessage();
-        }
+		try {
+			component_routing_db::layer()->insert($query,$params);
+			return true;
+		}
+		catch (Exception $e) {
+			if(!isset($this->logger)) $this->logger = new debug_logger(MP_LOG_DIR);
+			$this->logger->log('statement','db',$e->getMessage(),$this->logger::LOG_MONTH);
+		}
     }
-    /**
-     * @param $config
-     * @param array $params
-     * @return bool|string
-     */
-    public function update($config,$params = array())
-    {
-        if (!is_array($config)) return '$config must be an array';
 
-        $sql = '';
-
+	/**
+	 * @param $config
+	 * @param array $params
+	 * @return bool|string
+	 */
+	public function update(array $config, array $params = []) {
         switch ($config['type']) {
             case 'page':
-                $sql = 'UPDATE mc_transport 
+                $query = 'UPDATE mc_transport 
 						SET 
 							name_tr = :name_tr,
 						    postcode_tr = :postcode_tr,
@@ -160,7 +169,7 @@ class plugins_transport_db
                 		WHERE id_tr = :id_tr';
                 break;
             case 'cartpay':
-                $sql = 'UPDATE mc_cartpay_transport 
+                $query = 'UPDATE mc_cartpay_transport 
 						SET 
 							id_tr = :id_tr,
 						    type_ct = : type_ct,
@@ -176,48 +185,46 @@ class plugins_transport_db
                 		WHERE id_buyer = :id_buyer AND id_cart = :id_cart';
                 break;
             /*case 'order':
-                $sql = 'UPDATE mc_transport
+                $query = 'UPDATE mc_transport
 						SET order_tr = :order_tr
                 		WHERE id_tr = :id_tr';
                 break;*/
+			default:
+				return false;
         }
 
-        if($sql === '') return 'Unknown request asked';
-
-        try {
-            component_routing_db::layer()->update($sql,$params);
-            return true;
-        }
-        catch (Exception $e) {
-            return 'Exception reçue : '.$e->getMessage();
-        }
+		try {
+			component_routing_db::layer()->update($query,$params);
+			return true;
+		}
+		catch (Exception $e) {
+			if(!isset($this->logger)) $this->logger = new debug_logger(MP_LOG_DIR);
+			$this->logger->log('statement','db',$e->getMessage(),$this->logger::LOG_MONTH);
+		}
     }
-    /**
-     * @param $config
-     * @param array $params
-     * @return bool|string
-     */
-    public function delete($config, $params = array())
-    {
-        if (!is_array($config)) return '$config must be an array';
-        $sql = '';
 
+	/**
+	 * @param array $config
+	 * @param array $params
+	 * @return bool|string
+	 */
+	public function delete(array $config, array $params = []) {
         switch ($config['type']) {
             case 'delPages':
-                $sql = 'DELETE FROM mc_transport 
-						WHERE id_tr IN ('.$params['id'].')';
-                $params = array();
+                $query = 'DELETE FROM mc_transport WHERE id_tr IN ('.$params['id'].')';
+                $params = [];
                 break;
+			default:
+				return false;
         }
 
-        if($sql === '') return 'Unknown request asked';
-
-        try {
-            component_routing_db::layer()->delete($sql,$params);
-            return true;
-        }
-        catch (Exception $e) {
-            return 'Exception reçue : '.$e->getMessage();
-        }
+		try {
+			component_routing_db::layer()->delete($query,$params);
+			return true;
+		}
+		catch (Exception $e) {
+			if(!isset($this->logger)) $this->logger = new debug_logger(MP_LOG_DIR);
+			$this->logger->log('statement','db',$e->getMessage(),$this->logger::LOG_MONTH);
+		}
     }
 }

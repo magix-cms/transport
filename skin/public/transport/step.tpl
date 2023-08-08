@@ -69,7 +69,7 @@
                         </div>
                         <div class="col-6">
                             <div class="form-group">
-                                <input id="city_ct" type="text" name="contentData[city_ct]" placeholder="{#ph_city_ct#|ucfirst}" value="{if isset($account.address.delivery) && !empty($account.address.delivery)}{$account.address.delivery.town}{/if}" class="form-control to-required" required/>
+                                <input id="city_ct" type="text" name="contentData[city_ct]" placeholder="{#ph_city_ct#|ucfirst}" value="{if isset($account.address.delivery) && !empty($account.address.delivery)}{$account.address.delivery.town}{/if}" class="form-control to-required" {*required*}/>
                                 <label for="city_ct" class="is_empty">{#pn_city_ct#|ucfirst}&nbsp;*:</label>
                             </div>
                         </div>
@@ -77,17 +77,17 @@
                     <div class="row">
                         <div class="col-6">
                             <div class="form-group">
-                                <input id="postcode_ct" type="text" name="contentData[postcode_ct]" placeholder="{#ph_postcode_ct#|ucfirst}" value="{if isset($account.address.delivery) && !empty($account.address.delivery)}{$account.address.delivery.postcode}{/if}" class="form-control to-required" required/>
+                                <input id="postcode_ct" type="text" name="contentData[postcode_ct]" placeholder="{#ph_postcode_ct#|ucfirst}" value="{if isset($account.address.delivery) && !empty($account.address.delivery)}{$account.address.delivery.postcode}{/if}" class="form-control to-required" {*required*}/>
                                 <label for="postcode_ct" class="is_empty">{#pn_postcode_ct#|ucfirst}&nbsp;*:</label>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="form-group">
                                 {country_data}
-                                <select name="contentData[id_tr]" id="contentData[id_tr]" class="form-control to-required" required>
+                                <select name="contentData[id_tr]" id="contentData[id_tr]" class="form-control to-required" {*required*}>
                                     <option disabled selected>-- {#pn_transport_country#|ucfirst} --</option>
                                     {foreach $transport as $key}
-                                        <option value="{$key.id}"{if isset($account.address.delivery) && !empty($account.address.delivery) && {#$account.address.delivery.country#} === $key.country} selected{/if}>{$key.country}</option>
+                                        <option value="{$key.id}"{*{if isset($account.address.delivery) && !empty($account.address.delivery) && {#$account.address.delivery.country#} === $key.country} selected{/if}*}>{$key.country}</option>
                                     {/foreach}
                                 </select>
                                 <label for="contentData[id_tr]">{#pn_transport_country#|ucfirst}&nbsp;*:</label>
