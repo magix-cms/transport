@@ -25,3 +25,5 @@ CREATE TABLE IF NOT EXISTS `mc_cartpay_transport` (
     `date_register` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id_cart_tr`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+ALTER TABLE `mc_cartpay_transport` ADD FOREIGN KEY (`id_cart`) REFERENCES `mc_cartpay`(`id_cart`) ON DELETE CASCADE ON UPDATE CASCADE;

@@ -217,7 +217,7 @@ class plugins_transport_public extends plugins_transport_db {
 		];
 
         $collection = $this->getItems('cartpay_order',$transport, 'one', false);
-        $this->template->assign('transport',$this->setItemData($collection));
+        $this->template->assign('transport',$this->setItemData($collection ?? []));
         $arb = [
             'name'=>$this->template->getConfigVars('transport_step'),
             'desc'=> $this->template->fetch('transport/order.tpl')
