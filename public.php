@@ -194,7 +194,7 @@ class plugins_transport_public extends plugins_transport_db {
             if ($this->contentData['type_ct'] === 'delivery') {
                 if (isset($this->contentData['id_tr']) and $this->contentData['id_tr'] != NULL) {
                     $transportData = $this->getItems('transport_info', ['id_tr' => $this->contentData['id_tr']], 'one', false);
-                    $this->cart->addFee('transport', $transportData['price_tr'], $this->settings['vat_rate']);
+                    $this->cart->addFee('transport', number_format($transportData['price_tr'],2), $this->settings['vat_rate']);
                     //$this->cart->addFee(1,$transportData['price_tr'],21);
                 }
             }

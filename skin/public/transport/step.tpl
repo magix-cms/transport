@@ -45,52 +45,52 @@
             {*<pre>{$account|print_r}</pre>*}
             {*<pre>{$transport|print_r}</pre>*}
             <div id="delivery-data" class="collapse">
-                <div class="nice-form">
+                <div class="validate_form">
                     <div class="row">
                         <div class="col-6">
                             <div class="form-group">
-                                <input id="firstname_ct" type="text" name="contentData[firstname_ct]" placeholder="{#ph_tr_firstname#|ucfirst}" value="{if $account}{$account.firstname}{/if}" class="form-control"/>
                                 <label for="firstname_ct" class="is_empty">{#pn_tr_firstname#|ucfirst}&nbsp;:</label>
+                                <input id="firstname_ct" type="text" name="contentData[firstname_ct]" placeholder="{#ph_tr_firstname#|ucfirst}" value="{if $account}{$account.firstname}{/if}" class="form-control"/>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="form-group">
-                                <input id="lastname_ct" type="text" name="contentData[lastname_ct]" placeholder="{#ph_tr_lastname#|ucfirst}" value="{if $account}{$account.lastname}{/if}" class="form-control"/>
                                 <label for="lastname_ct" class="is_empty">{#pn_tr_lastname#|ucfirst}&nbsp;:</label>
+                                <input id="lastname_ct" type="text" name="contentData[lastname_ct]" placeholder="{#ph_tr_lastname#|ucfirst}" value="{if $account}{$account.lastname}{/if}" class="form-control"/>
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <input id="street_ct" type="text" name="contentData[street_ct]" placeholder="{#ph_tr_street#|ucfirst}" value="{if isset($account.address.delivery) && !empty($account.address.delivery)}{$account.address.delivery.street}{/if}" class="form-control to-required" {*required*}/>
                                 <label for="street_ct" class="is_empty">{#pn_tr_street#|ucfirst}*&nbsp;:</label>
+                                <input id="street_ct" type="text" name="contentData[street_ct]" placeholder="{#ph_tr_street#|ucfirst}" value="{if isset($account.address.delivery) && !empty($account.address.delivery)}{$account.address.delivery.street}{/if}" class="form-control to-required" {*required*}/>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="form-group">
-                                <input id="city_ct" type="text" name="contentData[city_ct]" placeholder="{#ph_city_ct#|ucfirst}" value="{if isset($account.address.delivery) && !empty($account.address.delivery)}{$account.address.delivery.town}{/if}" class="form-control to-required" {*required*}/>
                                 <label for="city_ct" class="is_empty">{#pn_city_ct#|ucfirst}&nbsp;*:</label>
+                                <input id="city_ct" type="text" name="contentData[city_ct]" placeholder="{#ph_city_ct#|ucfirst}" value="{if isset($account.address.delivery) && !empty($account.address.delivery)}{$account.address.delivery.town}{/if}" class="form-control to-required" {*required*}/>
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-6">
                             <div class="form-group">
-                                <input id="postcode_ct" type="text" name="contentData[postcode_ct]" placeholder="{#ph_postcode_ct#|ucfirst}" value="{if isset($account.address.delivery) && !empty($account.address.delivery)}{$account.address.delivery.postcode}{/if}" class="form-control to-required" {*required*}/>
                                 <label for="postcode_ct" class="is_empty">{#pn_postcode_ct#|ucfirst}&nbsp;*:</label>
+                                <input id="postcode_ct" type="text" name="contentData[postcode_ct]" placeholder="{#ph_postcode_ct#|ucfirst}" value="{if isset($account.address.delivery) && !empty($account.address.delivery)}{$account.address.delivery.postcode}{/if}" class="form-control to-required" {*required*}/>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="form-group">
                                 {country_data}
+                                <label for="contentData[id_tr]">{#pn_transport_country#|ucfirst}&nbsp;*:</label>
                                 <select name="contentData[id_tr]" id="contentData[id_tr]" class="form-control to-required" {*required*}>
                                     <option disabled selected>-- {#pn_transport_country#|ucfirst} --</option>
                                     {foreach $transport as $key}
                                         <option value="{$key.id}"{*{if isset($account.address.delivery) && !empty($account.address.delivery) && {#$account.address.delivery.country#} === $key.country} selected{/if}*}>{$key.country}</option>
                                     {/foreach}
                                 </select>
-                                <label for="contentData[id_tr]">{#pn_transport_country#|ucfirst}&nbsp;*:</label>
                             </div>
                         </div>
                     </div>
