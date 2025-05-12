@@ -31,7 +31,18 @@
         libjs/vendor/tabcomplete.min.js,
         libjs/vendor/livefilter.min.js,
         libjs/vendor/bootstrap-select.min.js,
-        libjs/vendor/filterlist.min.js
+        libjs/vendor/filterlist.min.js,
+        plugins/transport/js/admin.min.js
     {/strip}{/capture}
     {script src=$smarty.capture.scriptForm type="javascript"}
+    <script type="text/javascript">
+        $(function(){
+            if (typeof transport == "undefined")
+            {
+                console.log("transport is not defined");
+            }else{
+                transport.run();
+            }
+        });
+    </script>
 {/block}

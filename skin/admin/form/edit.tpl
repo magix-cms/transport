@@ -9,6 +9,12 @@
             </div>
             <div class="col-ph-12 col-md-4">
                 <div class="form-group">
+                    <label for="price_ttc">{#ttc#}</label>
+                    <input type="text" class="form-control" id="price_ttc" data-vat="{$setting.vat_rate}" value="{($page.price_tr * ($setting.vat_rate/100 + 1))|round:1|number_format:2:'.':''}" />
+                </div>
+            </div>
+            <div class="col-ph-12 col-md-4">
+                <div class="form-group">
                     <label for="name_tr">{#name_tr#}</label>
                     <input type="text" class="form-control" id="name_tr" name="transData[name_tr]" value="{$page.name_tr}" placeholder="{#ph_name_tr#|ucfirst}">
                 </div>
